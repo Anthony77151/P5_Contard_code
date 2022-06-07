@@ -1,7 +1,13 @@
+// on va chercher les informations de notre API avec fetch()
 fetch("http://localhost:3000/api/products")
     .then((response) => response.json())
     .then((data) => addProducts(data))
-    .catch((err) => console.log(err))
+    .catch((error) => {
+        const messageError = document.createElement("h3")
+        messageError.textContent = "Erreur lors de la récupération des données"
+        const parent = document.querySelector("#items")
+        parent.appendChild(messageError)
+    })
 
 // fonction pour ajouté un produit avec les différentes infos nécessaire
 function addProducts(data) {
@@ -11,8 +17,12 @@ function addProducts(data) {
         const anchor = makeAnchor(data[i]._id)
         const article = makeArticle()
         const image = makeImage(data[i].imageUrl, data[i].altTxt)
-        const title = makeTitle("h3", data[i].name)
-        const p = makeText(data[i].description)
+
+        const title = makeTitle("h3", data[i].name);
+        title.classList.add("productName")
+        
+        const p = makeDescription(data[i].description)
+        p.classList.add("productDescription")
     
         // ajout des éléments créer dans leurs parents
         article.appendChild(image)
@@ -55,16 +65,14 @@ function makeImage(imageUrl, altTxt) {
 function makeTitle(kind, name) {
     const title = document.createElement(kind)
     title.textContent = name
-    title.classList.add("productName")
 
     return title
 }
 
 // fonction pour créer un paragraphe qui reprend la description de notre produit
-function makeText(description) {
+function makeDescription(description) {
     const p = document.createElement("p")
     p.textContent = description
-    p.classList.add("productDescription")
 
     return p
 }
