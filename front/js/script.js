@@ -1,6 +1,6 @@
 // on va chercher les informations de notre API avec fetch()
 fetch("http://localhost:3000/api/products")
-    .then((response) => response.json())
+    .then((response) => response.json()) // .json pour rendre la réponse "exploitable" en JS
     .then((data) => {
         // loop pour réccuperer tout les produits avec nos infos
         for (let i = 0; i < data.length; i++) {
@@ -22,8 +22,8 @@ fetch("http://localhost:3000/api/products")
         }
     })
     .catch((error) => {
-        const messageError = document.createElement("h3");
-        messageError.textContent = "Erreur lors de la récupération des données";
+        const messageError = makeP("Erreur lors de la récupération des données.");
+        messageError.classList.add("alert")
         const parent = document.querySelector("#items");
         parent.appendChild(messageError);
     })

@@ -1,6 +1,9 @@
 /*********/
 /*GENERAL*/
 /*********/
+.alert {
+	font-weight: bold;
+}
 
 body {
 	font-family: 'Montserrat', sans-serif;

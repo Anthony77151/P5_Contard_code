@@ -54,10 +54,83 @@ function makeDiv() {
 
     return div;
 }
+/////////////////////////////
+///////   PRODUCT   ////////
+///////////////////////////
+
+// fonction créant l'image du produit et la place dans la class "item__img"
+function makeProductImage(imageUrl, altTxt) {
+    const image = makeImage(imageUrl, altTxt);
+    const parent = document.querySelector(".item__img");
+    parent.appendChild(image);
+}
+
+// fonction pour créer un titre qui reprendra le nom de notre produit
+function makeProductTitle(kind, name) {
+    const title = makeTitle(kind, name);
+    const parent = document.querySelector("#title");
+    parent.appendChild(title);
+}
+
+// fonction pour créer un prix qui reprendra le prix de notre produit
+function makePrice(price) {
+    const productPrice = document.createElement("span");
+    productPrice.textContent = price;
+    const parent = document.querySelector("#price");
+    parent.appendChild(productPrice);
+}
+
+// fonction pour créer un paragraphe qui reprendra la description de notre produit
+function makeProductDescription(description) {
+    const productDescription = makeDescription(description);
+    const parent = document.querySelector("#description");
+    parent.appendChild(productDescription);
+}
+
+// fonction pour créer dans le select des options avec les différentes couleurs du produit
+function choseColors(colors) {
+    const select = document.querySelector("#colors");
+    // boucle pour créer les options et récupérer les différentes couleurs
+    for (let i = 0; i < colors.length; i++) {
+        const option = document.createElement("option");
+        option.value = colors[i];
+        option.textContent = colors[i];
+        select.appendChild(option);
+    }
+}
+
+// Fonction qui retourne un objet contenant les infos du produit (id, qty, color)
+function productInfo(dataAPI) {
+    return productObject = { // Un objet sera donc retourné
+        id: dataAPI._id,
+        qty: parseInt(document.querySelector("#quantity").value), // parseInt : Convert type str into type nbr
+        color: document.querySelector("#colors").value
+    };
+};
+
+// Fonction qui met à jour le LS
+function saveBasket(key, tab) {
+    localStorage.setItem(key, JSON.stringify(tab)); // json.stringify convertit une valeur JS en chaîne JSON (essentiel pour stocker dans le LS)
+};
+
+// Ajoute l'article dans le panier et s'il est déjà présent, actualise sa quantité
+function addToLocalStorage(objLocStorage, tabData, productData) {
+    let foundProduct = objLocStorage.find(elementInLS => elementInLS.id === productData.id && elementInLS.color === productData.color); // Compare l'ID et la couleur du produit à ajouter à ceux des produits dans le LS
+    if (foundProduct) { // S'ils sont identiques (if(foundProduct != undifined))
+        foundProduct.qty += productData.qty; // Update qty 
+        alert(`La quantité de votre article a été actualisée !`);
+    }
+    if (foundProduct == undefined) { // Sinon, si l'ID et la couleur sont différents 
+        objLocStorage.push(productInfo(tabData)); // Je push mon nouvel objet dans mon tableau du LS
+        alert("L'article a bien été ajouté dans votre panier.");
+    }
+    saveBasket("product_list", objLocStorage); // Je sauvegarde mon tableau dans le LS
+};
 
 /////////////////////////////
 ///////   CART   ///////////
 ///////////////////////////
+
 
 function makeCartArticle() {
     const article = makeArticle();
