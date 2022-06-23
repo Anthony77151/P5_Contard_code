@@ -27,3 +27,18 @@ fetch("http://localhost:3000/api/products")
         const parent = document.querySelector("#items");
         parent.appendChild(messageError);
     })
+
+// fonction ajoutant nos ancres et articles au niveau de la section items de notre index
+function appendChildren(anchor, article) {
+    const items = document.querySelector("#items");
+    items.appendChild(anchor);
+    anchor.appendChild(article);
+}
+
+// fonction pour créer une ancre menant à l'id d'un produit lors du clique
+function makeAnchor(id) {
+    const anchor = document.createElement("a");
+    anchor.href = "./product.html?id=" + id;
+
+    return anchor;
+}

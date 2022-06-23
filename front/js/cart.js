@@ -5,21 +5,20 @@ const contentLS = JSON.parse(localStorage.getItem(`product_list`));
 
 // Retourne promises (un array de promesses) qui contient tous mes affichages de produits en HTML
 function displayCart() {
-    if (contentLS === null) { // Si localStorage est vide
-        const alert = makeP("Votre panier est vide.");
-        alert.classList.add("alert");
-        const parent = document.querySelector("#cart__items");
-        parent.appendChild(alert);
+    if (contentLS === null) { // Si localStorage est vide, ne fait rien
     } else {
-        const promises = [];
+        const promises = []; // On initialise un tableau vide
         for (let product of contentLS) {
             const promise = new Promise(async (resolve) => { // Y a autant de promesses que de produits
                 const monApi = `http://localhost:3000/api/products/${product.id}`; // Car je veux les infos de chaque produit
                 const response = await fetch(monApi); // Pour récupérer les autres infos des produits
                 const data = await response.json(); // Await pour attendre le fetch au-dessus
-                const article = makeCartArticle(data); // Création de nos différents élément
+
+                // Création de nos différents élément
+                const article = makeCartArticle(data);
                 article.setAttribute("data-id", product.id)
                 article.setAttribute("data-color", product.color)
+
                 const divImg = makeCartImageDiv();
                 const image = makeCartImage(data);
                 const divContent = makeCartContentDiv();
@@ -33,7 +32,9 @@ function displayCart() {
                 const input = makeCartContentInputQty(product.qty);
                 const divRemove = makeCartContentDeleteDiv();
                 const remove = makeCartContentDeleteP();
-                article.appendChild(divImg); // ajout des éléments créer dans leurs parents
+
+                // ajout des éléments créer dans leurs parents
+                article.appendChild(divImg);
                 divImg.appendChild(image);
                 article.appendChild(divContent);
                 divContent.appendChild(divContentDescription);
@@ -49,9 +50,9 @@ function displayCart() {
                 sectionItem.appendChild(article);
                 resolve();
             });
-            promises.push(promise);
+            promises.push(promise); // Ajout de chaque promise dans le tableau
         }
-        return promises;
+        return promises; // Retourne le tableau de promesses
     }
 }
 
@@ -78,14 +79,14 @@ function changeQuantity() {
     allQtyInputs.forEach(itemInput => { // Pour chaque input parmi allQtyInputs
         itemInput.addEventListener("change", () => {
             const itemQty = parseInt(itemInput.value);
-            if (itemInput.value < 1) {
+            if (itemInput.value < 1) { // Si la quantité est inférieur à 1
                 itemInput.closest("article").remove(); // Suppression au niveau du DOM
                 contentLS.splice(getProductIndex(itemInput), 1); // Select one element from productIdx & delete it (donc lui-même)
                 saveBasket("product_list", contentLS);
                 getTotalQuantity();
                 getTotalPrice();
             }
-            if (itemInput.value >= 1 && itemInput.value <= 100) {
+            if (itemInput.value >= 1 && itemInput.value <= 100) { // Si la quantité est comprise entre 1 et 100
                 contentLS[getProductIndex(itemInput)].qty = itemQty; // La qty du produit dans le LS prend la valeur de l'input
                 saveBasket("product_list", contentLS);
                 getTotalQuantity();
@@ -146,3 +147,106 @@ function getTotalPrice() {
         getTotalQuantity();
     }
 }
+
+/////////////////////////////
+///////   CART   ///////////
+///////////////////////////
+
+
+function makeCartArticle() {
+    const article = makeArticle();
+    article.classList.add("cart__item")
+
+    return article;
+}
+
+function makeCartImageDiv() {
+    const div = makeDiv();
+    div.classList.add("cart__item__img")
+
+    return div;
+}
+
+function makeCartImage(product) {
+    const image = makeImage(product.imageUrl, product.altTxt);
+    image.setAttribute('src', product.imageUrl);
+    image.setAttribute('alt', product.altTxt);
+
+    return image;
+}
+
+function makeCartContentDiv() {
+    const div = makeDiv();
+    div.classList.add("cart__item__content")
+
+    return div;
+}
+
+function makeCartContentDescriptionDiv() {
+    const div = makeDiv();
+    div.classList.add("cart__item__content__description")
+
+    return div;
+}
+
+function makeCartContentTitle(kind, name) {
+    const title = makeTitle(kind, name)
+
+    return title;
+}
+
+function makeCartContentColor(color) {
+    return makeP(color)
+}
+
+function makeCartContentPrice(price) {
+    return makeP(price)
+}
+
+function makeCartContentSettings() {
+    const div = makeDiv();
+    div.classList.add("cart__item__content__settings")
+
+    return div;
+}
+
+function makeCartContentSettingsQty() {
+    const div = makeDiv();
+    div.classList.add("cart__item__content__settings__quantity")
+
+    return div;
+}
+
+function makeCartContentSettingsQuantity() {
+    return makeP("Qté : ")
+}
+
+function makeCartContentInputQty(qty) {
+    const input = document.createElement("input");
+    input.value = qty
+    input.classList.add("itemQuantity")
+    input.setAttribute("type", "number")
+    input.setAttribute("min", "1")
+    input.setAttribute("max", "100")
+    input.setAttribute("name", "itemQuantity")
+
+    return input;
+}
+
+function makeCartContentDeleteDiv() {
+    const div = makeDiv();
+    div.classList.add("cart__item__content__settings__delete")
+
+    return div;
+}
+
+function makeCartContentDeleteP() {
+    const remove = makeP("Supprimer")
+    remove.classList.add("deleteItem")
+
+    return remove;
+}
+
+/////////////////////////////
+///////   FORM   ///////////
+///////////////////////////
