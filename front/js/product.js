@@ -110,17 +110,11 @@ function productInfo(dataAPI) {
     };
 };
 
-// Fonction qui met à jour le LS
-function saveBasket(key, tab) {
-    localStorage.setItem(key, JSON.stringify(tab)); // json.stringify convertit une valeur JS en chaîne JSON (essentiel pour stocker dans le LS)
-};
-
 // Ajoute l'article dans le panier et s'il est déjà présent, actualise sa quantité
 function addToLocalStorage(objLocStorage, tabData, productData) {
     let foundProduct = objLocStorage.find(elementInLS => elementInLS.id === productData.id && elementInLS.color === productData.color); // Compare l'ID et la couleur du produit à ajouter à ceux des produits dans le LS
     if (foundProduct) { // S'ils sont identiques (if(foundProduct != undifined))
         foundProduct.qty += productData.qty; // Update qty 
-        // alert(`La quantité de votre article a été actualisée !`);
         const info = makeP("La quantité de votre article a été actualisée !");
         info.classList.add("alert");
         const parent = document.querySelector(".item__content__settings");
@@ -133,7 +127,6 @@ function addToLocalStorage(objLocStorage, tabData, productData) {
     }
     if (foundProduct == undefined) { // Sinon, si l'ID et la couleur sont différents 
         objLocStorage.push(productInfo(tabData)); // Je push mon nouvel objet dans mon tableau du LS
-        // alert("L'article a bien été ajouté dans votre panier.");
         const info = makeP("L'article a bien été ajouté dans votre panier.");
         info.classList.add("alert");
         const parent = document.querySelector(".item__content__settings");

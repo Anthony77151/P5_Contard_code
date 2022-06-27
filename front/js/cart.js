@@ -144,7 +144,7 @@ function getTotalPrice() {
         }
         document.getElementById("totalPrice").innerText = arrayPrice.reduce((acc, i) => acc + i); // On récupère le total des prix
     } else {
-        getTotalQuantity();
+        getTotalQuantity(); // Même si le LS est vide, on récupère la quantité totale
     }
 }
 
@@ -250,3 +250,41 @@ function makeCartContentDeleteP() {
 /////////////////////////////
 ///////   FORM   ///////////
 ///////////////////////////
+
+const inputValidations = {
+    firstName: {
+        regex: /^[A-Za-zÀ-ü-' ]+$/,
+        frenchName: "Prénom"
+    },
+    lastName: {
+        regex: /^[A-Za-zÀ-ü-' ]+$/,
+        frenchName: "Nom"
+    },
+    address: {
+        regex: /^[0-9]+\s[A-Za-zÀ-ü-'\s]+/,
+        frenchName: "Adresse"
+    },
+    city: {
+        regex: /^[A-Za-zÀ-ü-' ]+$/,
+        frenchName: "Ville"
+    },
+    email: {
+        regex: /.+\@.+\..+/,
+        frenchName: "Email"
+    }
+};
+
+
+/**
+ *
+ * Expects request to contain:
+ * contact: {
+ *   firstName: string,
+ *   lastName: string,
+ *   address: string,
+ *   city: string,
+ *   email: string
+ * }
+ * products: [string] <-- array of product _id
+ *
+ */

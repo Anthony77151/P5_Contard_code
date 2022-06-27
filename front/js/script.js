@@ -18,7 +18,7 @@ fetch("http://localhost:3000/api/products")
             article.appendChild(image);
             article.appendChild(title);
             article.appendChild(p);
-            appendChildren(anchor, article);
+            appendArticleToAnchor(anchor, article);
         }
     })
     .catch((error) => {
@@ -29,7 +29,7 @@ fetch("http://localhost:3000/api/products")
     })
 
 // fonction ajoutant nos ancres et articles au niveau de la section items de notre index
-function appendChildren(anchor, article) {
+function appendArticleToAnchor(anchor, article) {
     const items = document.querySelector("#items");
     items.appendChild(anchor);
     anchor.appendChild(article);

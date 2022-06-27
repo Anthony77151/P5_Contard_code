@@ -39,3 +39,9 @@ function makeDiv() {
 
     return div;
 }
+
+// Fonction qui met à jour le LS
+function saveBasket(key, data) {
+    // json.stringify convertit une valeur JS en chaîne JSON (essentiel pour stocker dans le LS)
+    localStorage.setItem(key, JSON.stringify(data));
+};
