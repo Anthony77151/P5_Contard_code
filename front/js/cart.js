@@ -5,59 +5,67 @@ const contentLS = JSON.parse(localStorage.getItem(`product_list`));
 
 // Retourne promises (un array de promesses) qui contient tous mes affichages de produits en HTML
 function displayCart() {
-    if (contentLS === null) { // Si localStorage est vide, ne fait rien
-    } else {
+    if (contentLS !== null) { // Si localStorage est vide, ne fait rien
         const promises = []; // On initialise un tableau vide
         for (let product of contentLS) {
-            const promise = new Promise(async (resolve) => { // Y a autant de promesses que de produits
-                const monApi = `http://localhost:3000/api/products/${product.id}`; // Car je veux les infos de chaque produit
-                const response = await fetch(monApi); // Pour récupérer les autres infos des produits
-                const data = await response.json(); // Await pour attendre le fetch au-dessus
-
-                // Création de nos différents élément
-                const article = makeCartArticle(data);
-                article.setAttribute("data-id", product.id)
-                article.setAttribute("data-color", product.color)
-
-                const divImg = makeCartImageDiv();
-                const image = makeCartImage(data);
-                const divContent = makeCartContentDiv();
-                const divContentDescription = makeCartContentDescriptionDiv();
-                const title = makeCartContentTitle("h2", data.name);
-                const color = makeCartContentColor(product.color);
-                const price = makeCartContentPrice(data.price + " €");
-                const divContentSettings = makeCartContentSettings();
-                const divContentSettingsQty = makeCartContentSettingsQty();
-                const qty = makeCartContentSettingsQuantity(product.qty);
-                const input = makeCartContentInputQty(product.qty);
-                const divRemove = makeCartContentDeleteDiv();
-                const remove = makeCartContentDeleteP();
-
-                // ajout des éléments créer dans leurs parents
-                article.appendChild(divImg);
-                divImg.appendChild(image);
-                article.appendChild(divContent);
-                divContent.appendChild(divContentDescription);
-                divContentDescription.appendChild(title);
-                divContentDescription.appendChild(color);
-                divContentDescription.appendChild(price);
-                divContent.appendChild(divContentSettings);
-                divContentSettings.appendChild(divContentSettingsQty);
-                divContentSettingsQty.appendChild(qty);
-                divContentSettingsQty.appendChild(input);
-                divContent.appendChild(divRemove);
-                divRemove.appendChild(remove);
-                sectionItem.appendChild(article);
-                resolve();
-            });
-            promises.push(promise); // Ajout de chaque promise dans le tableau
+            makeCartPromise(product, promises)
         }
         return promises; // Retourne le tableau de promesses
     }
 }
 
 
-Promise.all(displayCart()).then(() => { // return .then si toutes les promesses sont réussies/terminées
+/////////////////////////////
+///////   CART   ///////////
+///////////////////////////
+
+function makeCartPromise(product, promises) {
+    const promise = new Promise(async (resolve) => { // Y a autant de promesses que de produits
+        const monApi = `http://localhost:3000/api/products/${product.id}`; // Car je veux les infos de chaque produit
+        const response = await fetch(monApi); // Pour récupérer les autres infos des produits
+        const data = await response.json(); // Await pour attendre le fetch au-dessus
+
+        // Création de nos différents élément
+        const article = makeCartArticle(data);
+        article.setAttribute("data-id", product.id)
+        article.setAttribute("data-color", product.color)
+
+        const divImg = makeCartImageDiv();
+        const image = makeCartImage(data);
+        const divContent = makeCartContentDiv();
+        const divContentDescription = makeCartContentDescriptionDiv();
+        const title = makeCartContentTitle("h2", data.name);
+        const color = makeCartContentColor(product.color);
+        const price = makeCartContentPrice(data.price + " €");
+        const divContentSettings = makeCartContentSettings();
+        const divContentSettingsQty = makeCartContentSettingsQty();
+        const qty = makeCartContentSettingsQuantity(product.qty);
+        const input = makeCartContentInputQty(product.qty);
+        const divRemove = makeCartContentDeleteDiv();
+        const remove = makeCartContentDeleteP();
+
+        // ajout des éléments créer dans leurs parents
+        article.appendChild(divImg);
+        divImg.appendChild(image);
+        article.appendChild(divContent);
+        divContent.appendChild(divContentDescription);
+        divContentDescription.appendChild(title);
+        divContentDescription.appendChild(color);
+        divContentDescription.appendChild(price);
+        divContent.appendChild(divContentSettings);
+        divContentSettings.appendChild(divContentSettingsQty);
+        divContentSettingsQty.appendChild(qty);
+        divContentSettingsQty.appendChild(input);
+        divContent.appendChild(divRemove);
+        divRemove.appendChild(remove);
+        sectionItem.appendChild(article);
+        resolve();
+    });
+    promises.push(promise); // Ajout de chaque promise dans le tableau
+}
+
+// return .then si toutes les promesses sont réussies/terminées
+Promise.all(displayCart()).then(() => {
     changeQuantity();
     deleteItem();
     getTotalQuantity();
@@ -149,7 +157,7 @@ function getTotalPrice() {
 }
 
 /////////////////////////////
-///////   CART   ///////////
+/////   CART ELEMENTS  /////
 ///////////////////////////
 
 
@@ -254,25 +262,26 @@ function makeCartContentDeleteP() {
 const inputValidations = {
     firstName: {
         regex: /^[A-Za-zÀ-ü-' ]+$/,
-        frenchName: "Prénom"
     },
     lastName: {
         regex: /^[A-Za-zÀ-ü-' ]+$/,
-        frenchName: "Nom"
     },
     address: {
-        regex: /^[0-9]+\s[A-Za-zÀ-ü-'\s]+/,
-        frenchName: "Adresse"
+        regex: /^[0-9]?\s[A-Za-zÀ-ü-'\s]+/,
     },
     city: {
         regex: /^[A-Za-zÀ-ü-' ]+$/,
-        frenchName: "Ville"
     },
     email: {
         regex: /.+\@.+\..+/,
-        frenchName: "Email"
     }
 };
+
+// fonction pour comparer l'input à la regex
+
+// fonction pour test chaque input
+
+// fonction pour valider le formulaire et le soumettre
 
 
 /**
