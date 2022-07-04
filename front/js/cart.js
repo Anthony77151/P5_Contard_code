@@ -1,5 +1,5 @@
-
 const sectionItem = document.querySelector("#cart__items");
+const submitButton = document.getElementById("order");
 const contentLS = JSON.parse(localStorage.getItem(`product_list`));
 // get le contenu du localStorage sous forme d'objet avec le json.parse
 
@@ -70,6 +70,8 @@ Promise.all(displayCart()).then(() => {
     deleteItem();
     getTotalQuantity();
     getTotalPrice();
+    initValidation();
+    valideForm();
 });
 
 // Permet de retourner l'index du produit
@@ -261,39 +263,93 @@ function makeCartContentDeleteP() {
 
 const inputValidations = {
     firstName: {
-        regex: /^[A-Za-zÀ-ü-' ]+$/,
+        regex: /^([A-ZÀ-ÿ-a-z. ']{3,}[ ]*)+$/,
     },
     lastName: {
-        regex: /^[A-Za-zÀ-ü-' ]+$/,
+        regex: /^([A-ZÀ-ÿ-a-z. ']{3,}[ ]*)+$/,
     },
     address: {
-        regex: /^[0-9]?\s[A-Za-zÀ-ü-'\s]+/,
+        regex: /^[a-zA-Z0-9\s,'-]{3,}$/,
     },
     city: {
-        regex: /^[A-Za-zÀ-ü-' ]+$/,
+        regex: /^([A-ZÀ-ÿ-a-z. ']{3,}[ ]*)+$/,
     },
     email: {
-        regex: /.+\@.+\..+/,
+        regex: /^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$/,
     }
 };
 
-// fonction pour comparer l'input à la regex
+// Mise en place du test pour comparer la regex à ce qui a été saisi dans l'input
+function testInput(nameInput, regexObj) {
+    const input = document.getElementById(nameInput);
+    const regex = regexObj;
+    const test = regex.test(input.value);
+    if (test) {
+        return true;
+    } else {
+        return false;
+    }
+};
 
-// fonction pour test chaque input
+// Applique le test pour chaque input du formulaire et agit en conséquence du résultat
+function initValidation() {
+    const inputs = document.querySelectorAll("form input[name]"); // Exclut le bouton grâce au [name]
+    inputs.forEach(input => {
+        input.addEventListener("change", () => {
+            for (let key in inputValidations) {
+                if (input.name === key) { // Si le nom de l'input en HTML correspond à la clé (key) du tableau
+                    const test = testInput(key, inputValidations[key].regex)
+                    const errorMsg = input.nextElementSibling; // on récupère la balise situer après l'input
+                    if (test === true) {
+                        if (errorMsg) {
+                            errorMsg.innerText = "";
+                        }
+                    } else {
+                        errorMsg.innerText = `Le champ renseigner n'est pas valide`;
+                    }
+                }
+            }
+        })
+    })
+};
 
-// fonction pour valider le formulaire et le soumettre
-
-
-/**
- *
- * Expects request to contain:
- * contact: {
- *   firstName: string,
- *   lastName: string,
- *   address: string,
- *   city: string,
- *   email: string
- * }
- * products: [string] <-- array of product _id
- *
- */
+// Deuxième test du formulaire qui se fait au niveau du click 
+function valideForm() {
+    submitButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        for (let validationKey of Object.keys(inputValidations)) { // Object.keys rend inputValidations (qui est un objet) iterable car il renvoie un tableau de ses clés
+            const validationRule = inputValidations[validationKey];
+            if (testInput(validationKey, validationRule.regex)) {
+                continue; // Ignore et passe à la boucle suivante (au test suivant)
+            } else {
+                return; // Quitte la boucle
+            }
+        }
+        fetch("http://localhost:3000/api/products/order", {
+            // On envoie les données du formulaire à l'API
+            method: "POST",
+            body: JSON.stringify(
+                {
+                    // On récupère les données du formulaire
+                    contact: {
+                        firstName: document.getElementById("firstName").value,
+                        lastName: document.getElementById("lastName").value,
+                        address: document.getElementById("address").value,
+                        city: document.getElementById("city").value,
+                        email: document.getElementById("email").value
+                    },
+                    products: contentLS.map(x => x.id)
+                }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                contentLS.length = 0; // On vide le tableau
+                saveBasket("product_list", contentLS);
+                document.location = `./confirmation.html?id=${data.orderId}`;
+            })
+    })
+}
