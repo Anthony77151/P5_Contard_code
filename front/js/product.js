@@ -25,45 +25,6 @@ fetch(`http://localhost:3000/api/products/${id}`)
 ///////   PRODUCT   ////////
 ///////////////////////////
 
-function productButton(data) {
-    const color = document.querySelector("#colors").value;
-    const quantity = document.querySelector("#quantity").value;
-    if (color === "" ||
-        color === null ||
-        quantity === null ||
-        quantity <= 0 ||
-        quantity > 100
-    ) { // Si l'utilisateur n'a pas choisi de couleur ou de quantité
-        const parent = document.querySelector(".item__content__settings");
-        if (parent) {
-            let alertDivElement = document.querySelector("#alert");
-            if (alertDivElement) {
-                while (alertDivElement.firstChild) {
-                    alertDivElement.removeChild(alertDivElement.firstChild);
-                }
-            } else {
-                const alertDiv = makeDiv();
-                alertDiv.setAttribute("id", "alert");
-                parent.appendChild(alertDiv);
-                alertDivElement = document.querySelector("#alert");
-            }
-
-            const alert = makeP("Veuillez choisir une couleur et une quantité valide.");
-            alert.classList.add("alert");
-            alertDivElement.appendChild(alert);
-            setTimeout(function () {
-                alert.remove();
-            }, 2000);
-        }
-    } else if (localStorage.getItem("product_list")) {  // Si le LS contient déjà la clé "product_list"
-        let tabProduct = JSON.parse(localStorage.getItem(`product_list`)); // Récup le contenu du LS en format JSON (il est en string de base)
-        addToLocalStorage(tabProduct, data, productInfo(data)); //productInfo retourne un objet 
-    } else { // Si le LS ne contient pas la clé "product_list"
-        let tabProduct = []; // je créé le tableau qui servira de valeur à cette clé
-        addToLocalStorage(tabProduct, data, productInfo(data));
-    }
-}
-
 // fonction créant l'image du produit et la place dans la class "item__img"
 function makeProductImage(imageUrl, altTxt) {
     const image = makeImage(imageUrl, altTxt);
@@ -105,6 +66,47 @@ function choseColors(colors) {
     }
 }
 
+function productButton(data) {
+    const color = document.querySelector("#colors").value;
+    const quantity = document.querySelector("#quantity").value;
+    if (color === "" ||
+        color === null ||
+        quantity === null ||
+        quantity <= 0 ||
+        quantity > 100
+    ) { // Si l'utilisateur n'a pas choisi de couleur ou de quantité
+        const parent = document.querySelector(".item__content__settings");
+        if (parent) {
+            let alertDivElement = document.querySelector("#alert");
+            if (alertDivElement) {
+                // Si l'alert existe déjà, on le supprime
+                while (alertDivElement.firstChild) {
+                    alertDivElement.removeChild(alertDivElement.firstChild);
+                }
+                // On crée une nouvelle alert
+            } else {
+                const alertDiv = makeDiv();
+                alertDiv.setAttribute("id", "alert");
+                parent.appendChild(alertDiv);
+                alertDivElement = document.querySelector("#alert");
+            }
+
+            const alert = makeP("Veuillez choisir une couleur et une quantité valide.");
+            alert.classList.add("alert");
+            alertDivElement.appendChild(alert);
+            setTimeout(function () {
+                alert.remove();
+            }, 2000);
+        }
+    } else if (localStorage.getItem("product_list")) {  // Si le LS contient déjà la clé "product_list"
+        let tabProduct = JSON.parse(localStorage.getItem(`product_list`)); // Récup le contenu du LS en format JSON (il est en string de base)
+        addToLocalStorage(tabProduct, data, productInfo(data)); //productInfo retourne un objet 
+    } else { // Si le LS ne contient pas la clé "product_list"
+        let tabProduct = []; // je créé le tableau qui servira de valeur à cette clé
+        addToLocalStorage(tabProduct, data, productInfo(data));
+    }
+}
+
 // Fonction qui retourne un objet contenant les infos du produit (id, qty, color)
 function productInfo(dataAPI) {
     return productObject = { // Un objet sera donc retourné
@@ -116,7 +118,8 @@ function productInfo(dataAPI) {
 
 // Ajoute l'article dans le panier et s'il est déjà présent, actualise sa quantité
 function addToLocalStorage(objLocStorage, tabData, productData) {
-    let foundProduct = objLocStorage.find(elementInLS => elementInLS.id === productData.id && elementInLS.color === productData.color); // Compare l'ID et la couleur du produit à ajouter à ceux des produits dans le LS
+    // Compare l'ID et la couleur du produit à ajouter à ceux des produits dans le LS
+    let foundProduct = objLocStorage.find(elementInLS => elementInLS.id === productData.id && elementInLS.color === productData.color);
     if (foundProduct) { // S'ils sont identiques (if(foundProduct != undifined))
         foundProduct.qty += productData.qty; // Update qty 
         const info = makeP("La quantité de votre article a été actualisée !");

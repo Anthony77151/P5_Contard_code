@@ -1,4 +1,4 @@
-const sectionItem = document.querySelector("#cart__items");
+const sectionItem = document.getElementById("cart__items");
 const submitButton = document.getElementById("order");
 const contentLS = JSON.parse(localStorage.getItem(`product_list`));
 // get le contenu du localStorage sous forme d'objet avec le json.parse
@@ -300,12 +300,10 @@ function initValidation() {
                 if (input.name === key) { // Si le nom de l'input en HTML correspond à la clé (key) du tableau
                     const test = testInput(key, inputValidations[key].regex)
                     const errorMsg = input.nextElementSibling; // on récupère la balise situer après l'input
-                    if (test === true) {
-                        if (errorMsg) {
-                            errorMsg.innerText = "";
-                        }
+                    if (test && errorMsg) {
+                        errorMsg.innerText = "";
                     } else {
-                        errorMsg.innerText = `Le champ renseigner n'est pas valide`;
+                        errorMsg.innerText = `Le champ renseigné n'est pas valide`;
                     }
                 }
             }

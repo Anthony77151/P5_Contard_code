@@ -4,13 +4,13 @@ fetch("http://localhost:3000/api/products")
     .then((data) => {
         // loop pour réccuperer tout les produits avec nos infos
         for (let i = 0; i < data.length; i++) {
+            // création de nos éléments
             const anchor = makeAnchor(data[i]._id);
             const article = makeArticle();
-            const image = makeImage(data[i].imageUrl, data[i].altTxt);
 
+            const image = makeImage(data[i].imageUrl, data[i].altTxt);
             const title = makeTitle("h3", data[i].name);
             title.classList.add("productName");
-
             const p = makeDescription(data[i].description);
             p.classList.add("productDescription");
 
